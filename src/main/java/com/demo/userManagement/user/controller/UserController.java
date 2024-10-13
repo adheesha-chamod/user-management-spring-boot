@@ -1,6 +1,7 @@
 package com.demo.userManagement.user.controller;
 
 import com.demo.userManagement.user.dto.AddUserDTO;
+import com.demo.userManagement.user.dto.UpdateUserDTO;
 import com.demo.userManagement.user.dto.UserDetailsDTO;
 import com.demo.userManagement.user.service.UserService;
 import jakarta.validation.Valid;
@@ -19,21 +20,29 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping
-    public ResponseEntity<UserDetailsDTO> addUser(
+    public ResponseEntity<String> addUser(
             @Valid @RequestBody AddUserDTO addUserDTO) {
-        log.debug("Received request to add user: {}", addUserDTO);
+        String newUserId = userService.addUser(addUserDTO).toString();
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(userService.addUser(addUserDTO));
+                .body(newUserId);
     }
 
     @GetMapping("/{userId}")
     public ResponseEntity<UserDetailsDTO> getUser(@PathVariable("userId") String userId) {
-        log.debug("Received request to get user with id: {}", userId);
-
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(userService.getUser(userId));
+    }
+
+    @PatchMapping("/{userId}")
+    public ResponseEntity<Void> updateUser(
+            @PathVariable("userId") String userId,
+            @Valid @RequestBody UpdateUserDTO updateUserDTO) {
+        userService.updateUser(userId, updateUserDTO);
+        return ResponseEntity
+                .status(HttpStatus.NO_CONTENT)
+                .build();
     }
 }
