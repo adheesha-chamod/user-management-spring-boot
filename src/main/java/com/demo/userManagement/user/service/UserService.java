@@ -3,6 +3,7 @@ package com.demo.userManagement.user.service;
 import com.demo.userManagement.user.dto.AddUserDTO;
 import com.demo.userManagement.user.dto.UpdateUserDTO;
 import com.demo.userManagement.user.dto.UserDetailsDTO;
+import com.demo.userManagement.user.dto.UserSummaryDTO;
 import com.demo.userManagement.user.entity.User;
 import com.demo.userManagement.user.exception.InvalidAddUserRequestException;
 import com.demo.userManagement.user.exception.UserNotFoundException;
@@ -10,7 +11,16 @@ import com.demo.userManagement.user.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.demo.userManagement.util.ValidationUtil.isValidEmail;
 
@@ -20,6 +30,7 @@ import static com.demo.userManagement.util.ValidationUtil.isValidEmail;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final MongoTemplate mongoTemplate;
 
     public ObjectId addUser(AddUserDTO addUserDTO) {
         if (isEmailDuplicate(addUserDTO.getEmail().trim())) {
@@ -44,6 +55,26 @@ public class UserService {
                 });
         
         return getUserDetailsDTO(user);
+    }
+
+    public Page<UserSummaryDTO> getUsers(String search, Pageable pageable) {
+        Query query = new Query().with(pageable);
+        if (search != null && !search.isBlank()) {
+            // search for both name and email | case-insensitive & prefix-based
+            Criteria criteria = new Criteria().orOperator(
+                    Criteria.where("name").regex("^" + search.trim(), "i"),
+                    Criteria.where("email").regex("^" + search.trim(), "i")
+            );
+            query.addCriteria(criteria);
+        }
+
+        long total = mongoTemplate.count(query, User.class);
+        List<User> users = mongoTemplate.find(query, User.class);
+        List<UserSummaryDTO> userSummaryDTOs = users.stream()
+                .map(this::getUserSummaryDTO)
+                .collect(Collectors.toList());
+
+        return new PageImpl<>(userSummaryDTOs, pageable, total);
     }
 
     public void updateUser(String userId, UpdateUserDTO updateUserDTO) {
@@ -105,6 +136,15 @@ public class UserService {
                 .userType(user.getUserType())
                 .createdOn(user.getCreatedOn().toString())
                 .lastModifiedOn(user.getLastModifiedOn().toString())
+                .build();
+    }
+
+    private UserSummaryDTO getUserSummaryDTO(User user) {
+        return UserSummaryDTO.builder()
+                .id(user.getId().toString())
+                .name(user.getName())
+                .email(user.getEmail())
+                .userType(user.getUserType())
                 .build();
     }
 
