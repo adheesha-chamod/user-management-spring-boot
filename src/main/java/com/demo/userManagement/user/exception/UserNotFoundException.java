@@ -8,15 +8,12 @@ public class UserNotFoundException extends NotFoundException {
         super("User not found");
     }
 
-    public UserNotFoundException(String userId) {
-        super(String.format("User with id %s not found", userId));
+    public UserNotFoundException(String message) {
+        super(message);
     }
 
-    public UserNotFoundException(String userId, Throwable cause) {
-        super(
-                String.format("User with id %s not found", userId),
-                cause
-        );
+    public UserNotFoundException(String message, Throwable cause) {
+        super(message, cause);
     }
 
     public UserNotFoundException(Throwable cause) {

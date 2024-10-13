@@ -1,37 +1,33 @@
 package com.demo.userManagement.user.entity;
 
 import com.demo.userManagement.user.enums.UserType;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Document(collection = "users")
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class User {
 
     @Id
-    private Object id;
-    @NotBlank
+    private ObjectId id;
     private String name;
-    @Email
-    @NotBlank
     private String email;
-    @NotNull
     private UserType userType;
 
     @CreatedDate
-    private LocalDateTime createdOn;
+    private Instant createdOn;
     @LastModifiedDate
-    private LocalDateTime lastModifiedOn;
+    private Instant lastModifiedOn;
 }

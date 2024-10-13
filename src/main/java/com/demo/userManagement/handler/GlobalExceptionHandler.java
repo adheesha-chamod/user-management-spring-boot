@@ -1,8 +1,8 @@
 package com.demo.userManagement.handler;
 
 import com.demo.userManagement.exception.NotFoundException;
+import com.demo.userManagement.exception.UnprocessableEntityException;
 import com.demo.userManagement.handler.dto.ErrorResponse;
-import com.demo.userManagement.user.exception.UserNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,8 +22,8 @@ public class GlobalExceptionHandler {
                 .body(getErrorResponse(ex.getMessage(), ex.getCause()));
     }
 
-    @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleUserNotFoundException(UserNotFoundException ex) {
+    @ExceptionHandler(UnprocessableEntityException.class)
+    public ResponseEntity<ErrorResponse> handleUnprocessableEntityException(UnprocessableEntityException ex) {
         return ResponseEntity
                 .status(ex.getStatus())
                 .body(getErrorResponse(ex.getMessage(), ex.getCause()));
