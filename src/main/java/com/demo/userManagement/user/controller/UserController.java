@@ -3,10 +3,14 @@ package com.demo.userManagement.user.controller;
 import com.demo.userManagement.user.dto.AddUserDTO;
 import com.demo.userManagement.user.dto.UpdateUserDTO;
 import com.demo.userManagement.user.dto.UserDetailsDTO;
+import com.demo.userManagement.user.dto.UserSummaryDTO;
 import com.demo.userManagement.user.service.UserService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,6 +37,15 @@ public class UserController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(userService.getUser(userId));
+    }
+
+    @GetMapping
+    public ResponseEntity<Page<UserSummaryDTO>> getUsers(
+            @RequestParam(required = false) String search,
+            @PageableDefault(page = 0, size = 10, sort = "name,asc") Pageable pageable) {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(userService.getUsers(search, pageable));
     }
 
     @PatchMapping("/{userId}")
