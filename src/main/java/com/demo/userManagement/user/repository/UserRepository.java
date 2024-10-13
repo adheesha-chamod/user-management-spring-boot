@@ -6,7 +6,5 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 
 public interface UserRepository extends MongoRepository<User, ObjectId> {
 
-    boolean existsByNameIgnoreCase(String name);
-
     boolean existsByEmail(String email);
 }
