@@ -19,10 +19,6 @@ public class UserService {
     private final UserRepository userRepository;
 
     public UserDetailsDTO addUser(AddUserDTO addUserDTO) {
-        if (isNameDuplicate(addUserDTO.getName().trim())) {
-            log.error(String.format("[addUser] Name '%s' already exists", addUserDTO.getName().trim()));
-            throw new InvalidAddUserRequestException("Name already exists");
-        }
         if (isEmailDuplicate(addUserDTO.getEmail().trim())) {
             log.error(String.format("[addUser] Email '%s' already exists", addUserDTO.getEmail().trim()));
             throw new InvalidAddUserRequestException("Email already exists");
@@ -55,10 +51,6 @@ public class UserService {
                 .createdOn(user.getCreatedOn().toString())
                 .lastModifiedOn(user.getLastModifiedOn().toString())
                 .build();
-    }
-
-    private boolean isNameDuplicate(String name) {
-        return userRepository.existsByNameIgnoreCase(name);
     }
 
     private boolean isEmailDuplicate(String email) {
