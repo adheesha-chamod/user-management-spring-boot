@@ -61,7 +61,6 @@ public class UserService {
             user.setName(updateUserDTO.getName().trim());
             isUpdated = true;
         }
-
         if (updateUserDTO.getEmail() != null
                 && !updateUserDTO.getEmail().isBlank()
                 && !updateUserDTO.getEmail().trim().equals(user.getEmail())) {
@@ -76,7 +75,6 @@ public class UserService {
             user.setEmail(updateUserDTO.getEmail().trim());
             isUpdated = true;
         }
-
         if (updateUserDTO.getUserType() != null
                 && updateUserDTO.getUserType() != user.getUserType()) {
             user.setUserType(updateUserDTO.getUserType());
@@ -88,6 +86,15 @@ public class UserService {
         } else {
             log.warn("[updateUser] No changes detected to update");
         }
+    }
+
+    public void deleteUser(String userId) {
+        ObjectId id = new ObjectId(userId);
+        if (!userRepository.existsById(id)) {
+            log.error(String.format("[deleteUser] User with id '%s' not found", userId));
+            throw new UserNotFoundException(String.format("User with id '%s' not found", userId));
+        }
+        userRepository.deleteById(id);
     }
 
     private UserDetailsDTO getUserDetailsDTO(User user) {

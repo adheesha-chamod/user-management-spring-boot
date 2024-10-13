@@ -23,7 +23,6 @@ public class UserController {
     public ResponseEntity<String> addUser(
             @Valid @RequestBody AddUserDTO addUserDTO) {
         String newUserId = userService.addUser(addUserDTO).toString();
-
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(newUserId);
@@ -41,6 +40,14 @@ public class UserController {
             @PathVariable("userId") String userId,
             @Valid @RequestBody UpdateUserDTO updateUserDTO) {
         userService.updateUser(userId, updateUserDTO);
+        return ResponseEntity
+                .status(HttpStatus.NO_CONTENT)
+                .build();
+    }
+
+    @DeleteMapping("/{userId}")
+    public ResponseEntity<Void> deleteUser(@PathVariable("userId") String userId) {
+        userService.deleteUser(userId);
         return ResponseEntity
                 .status(HttpStatus.NO_CONTENT)
                 .build();
